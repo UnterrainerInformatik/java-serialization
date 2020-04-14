@@ -1,4 +1,4 @@
-package info.unterrainer.commons.udpobserver;
+package info.unterrainer.commons.serialization.jsons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
