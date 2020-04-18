@@ -1,11 +1,15 @@
 package info.unterrainer.commons.serialization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.SneakyThrows;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Serializer {
 
 	ObjectMapper objectMapper;
@@ -16,13 +20,53 @@ public class Serializer {
 		return s;
 	}
 
-	@SneakyThrows(JsonProcessingException.class)
+	/***
+	 * @throws JsonProcessingException
+	 */
 	public <T> String toJsonFrom(final T sourceObject) {
-		return objectMapper.writeValueAsString(sourceObject);
+		try {
+			return objectMapper.writeValueAsString(sourceObject);
+		} catch (JsonProcessingException e) {
+			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+		}
 	}
 
-	@SneakyThrows({ JsonMappingException.class, JsonProcessingException.class })
+	/***
+	 * @throws JsonMappingException
+	 * @throws JsonProcessingException
+	 */
 	public <T> T fromJsonTo(final Class<T> targetClass, final String sourceJson) {
-		return objectMapper.readValue(sourceJson, targetClass);
+		try {
+			return objectMapper.readValue(sourceJson, targetClass);
+		} catch (JsonMappingException e) {
+			throw new info.unterrainer.commons.serialization.exceptions.JsonMappingException(e.getMessage(), e);
+		} catch (JsonProcessingException e) {
+			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+		}
+	}
+
+	/***
+	 * @throws JsonMappingException
+	 * @throws JsonProcessingException
+	 */
+	public <T> T fromTreeTo(final Class<T> targetClass, final TreeNode treeNode) {
+		try {
+			return objectMapper.treeToValue(treeNode, targetClass);
+		} catch (JsonMappingException e) {
+			throw new info.unterrainer.commons.serialization.exceptions.JsonMappingException(e.getMessage(), e);
+		} catch (JsonProcessingException e) {
+			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+		}
+	}
+
+	/***
+	 * @throws JsonProcessingException
+	 */
+	public JsonNode readTree(final String json) {
+		try {
+			return objectMapper.readTree(json);
+		} catch (JsonProcessingException e) {
+			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+		}
 	}
 }
