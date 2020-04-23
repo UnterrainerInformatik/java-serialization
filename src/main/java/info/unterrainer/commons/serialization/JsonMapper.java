@@ -10,12 +10,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Serializer {
+public class JsonMapper {
 
 	ObjectMapper objectMapper;
 
-	public static Serializer create() {
-		Serializer s = new Serializer();
+	public static JsonMapper create() {
+		JsonMapper s = new JsonMapper();
 		s.objectMapper = new ObjectMapper();
 		return s;
 	}
