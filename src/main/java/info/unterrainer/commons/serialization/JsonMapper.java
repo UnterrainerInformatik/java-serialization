@@ -1,10 +1,17 @@
 package info.unterrainer.commons.serialization;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,18 +19,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonMapper {
 
+	public static final String DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
 	ObjectMapper objectMapper;
 
 	public static JsonMapper create() {
 		JsonMapper s = new JsonMapper();
 		s.objectMapper = new ObjectMapper();
+
+		// DateTime serialization and deserialization.
+		s.objectMapper.registerModule(new JavaTimeModule());
+		s.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		s.objectMapper.setDateFormat(df);
+
+		// Ignore unknown properties when deserializing (field in string but not in
+		// object).
+		s.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		// Ignore null-values when serializing.
+		s.objectMapper.setSerializationInclusion(Include.NON_NULL);
+
 		return s;
 	}
 
 	/***
 	 * @throws JsonProcessingException
 	 */
-	public <T> String toJsonFrom(final T sourceObject) {
+	public <T> String toStringFrom(final T sourceObject) {
 		try {
 			return objectMapper.writeValueAsString(sourceObject);
 		} catch (JsonProcessingException e) {
@@ -35,7 +58,7 @@ public class JsonMapper {
 	 * @throws JsonMappingException
 	 * @throws JsonProcessingException
 	 */
-	public <T> T fromJsonTo(final Class<T> targetClass, final String sourceJson) {
+	public <T> T fromStringTo(final Class<T> targetClass, final String sourceJson) {
 		try {
 			return objectMapper.readValue(sourceJson, targetClass);
 		} catch (JsonMappingException e) {
