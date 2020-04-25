@@ -46,6 +46,8 @@ public class JsonMapper {
 		// Enable Lombok fluent and chained accessors.
 		s.objectMapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
 
+			private static final long serialVersionUID = -5794892113646125154L;
+
 			@Override
 			public JsonPOJOBuilder.Value findPOJOBuilderConfig(final AnnotatedClass ac) {
 				if (ac.hasAnnotation(JsonPOJOBuilder.class))
