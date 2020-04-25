@@ -3,14 +3,14 @@ package info.unterrainer.commons.serialization.jsons;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder(toBuilder = true)
 public class MediolaDatagramJson {
 	private String type;
 	@JsonProperty("adr")

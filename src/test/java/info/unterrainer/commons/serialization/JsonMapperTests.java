@@ -2,17 +2,43 @@ package info.unterrainer.commons.serialization;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
+
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import info.unterrainer.commons.serialization.jsons.ChildJson;
 import info.unterrainer.commons.serialization.jsons.MediolaDatagramJson;
 import info.unterrainer.commons.serialization.jsons.SimpleJson;
 
 public class JsonMapperTests {
 
-	private static final JsonMapper mapper = JsonMapper.create();
+	public static final JsonMapper mapper = JsonMapper.create();
+
+	public static final LocalDateTime localDateTime = LocalDateTime.of(2020, 01, 31, 14, 34, 26, 123456);
+	public static final String localDateTimeString = "2020-01-31T14:34:26.000123456";
+
+	@Test
+	public void deserializingExtendedClassesWithLombokBuildersWorks() {
+		String s = "{\"id\":2,\"createdOn\":\"2020-01-31T14:34:26.000123456\",\"editedOn\":\"2020-01-31T14:34:26.000123456\",\"string\":\"test\"}";
+		ChildJson result = mapper.fromStringTo(ChildJson.class, s);
+		assertThat(result.id()).isEqualByComparingTo(2L);
+		assertThat(result.createdOn()).isEqualTo(localDateTime);
+		assertThat(result.editedOn()).isEqualTo(localDateTime);
+		assertThat(result.string()).isEqualTo("test");
+	}
+
+	@Test
+	public void serializingExtendedClassesWithLombokBuildersWorks() {
+		ChildJson j = ChildJson.builder().id(2L).createdOn(localDateTime).editedOn(localDateTime).string("test")
+				.build();
+		String result = mapper.toStringFrom(j);
+		assertThat(result).contains(localDateTimeString);
+		assertThat(result).contains("test");
+		assertThat(result).contains("2");
+	}
 
 	@Test
 	public void nullValuesAreNotSerialized() {

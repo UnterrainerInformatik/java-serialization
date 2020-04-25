@@ -11,6 +11,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.AccessLevel;
@@ -39,6 +42,17 @@ public class JsonMapper {
 
 		// Ignore null-values when serializing.
 		s.objectMapper.setSerializationInclusion(Include.NON_NULL);
+
+		// Enable Lombok fluent and chained accessors.
+		s.objectMapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+
+			@Override
+			public JsonPOJOBuilder.Value findPOJOBuilderConfig(final AnnotatedClass ac) {
+				if (ac.hasAnnotation(JsonPOJOBuilder.class))
+					return super.findPOJOBuilderConfig(ac);
+				return new JsonPOJOBuilder.Value("build", "");
+			}
+		});
 
 		return s;
 	}

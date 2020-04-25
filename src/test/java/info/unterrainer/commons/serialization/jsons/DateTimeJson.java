@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder(toBuilder = true)
 public class DateTimeJson {
 
 	private LocalDate localDate;
