@@ -24,10 +24,10 @@ public class JsonMapperTests {
 	public void deserializingExtendedClassesWithLombokBuildersWorks() {
 		String s = "{\"id\":2,\"createdOn\":\"2020-01-31T14:34:26.000123456\",\"editedOn\":\"2020-01-31T14:34:26.000123456\",\"string\":\"test\"}";
 		ChildJson result = mapper.fromStringTo(ChildJson.class, s);
-		assertThat(result.id()).isEqualByComparingTo(2L);
-		assertThat(result.createdOn()).isEqualTo(localDateTime);
-		assertThat(result.editedOn()).isEqualTo(localDateTime);
-		assertThat(result.string()).isEqualTo("test");
+		assertThat(result.getId()).isEqualByComparingTo(2L);
+		assertThat(result.getCreatedOn()).isEqualTo(localDateTime);
+		assertThat(result.getEditedOn()).isEqualTo(localDateTime);
+		assertThat(result.getString()).isEqualTo("test");
 	}
 
 	@Test
