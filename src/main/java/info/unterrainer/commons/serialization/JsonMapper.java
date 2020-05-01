@@ -101,11 +101,15 @@ public class JsonMapper {
 	/***
 	 * @throws JsonProcessingException
 	 */
-	public JsonNode readTree(final String json) {
+	public JsonNode toTreeFrom(final String sourceJson) {
 		try {
-			return objectMapper.readTree(json);
+			return objectMapper.readTree(sourceJson);
 		} catch (JsonProcessingException e) {
 			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
 		}
+	}
+
+	public <T> JsonNode toTreeFrom(final T sourceObject) {
+		return objectMapper.valueToTree(sourceObject);
 	}
 }
