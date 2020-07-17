@@ -33,7 +33,7 @@ public class JsonMapper {
 		// DateTime serialization and deserialization.
 		s.objectMapper.registerModule(new JavaTimeModule());
 		s.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		DateFormat df = new SimpleDateFormat(DATETIME_PATTERN);
 		s.objectMapper.setDateFormat(df);
 
 		// Ignore unknown properties when deserializing (field in string but not in
