@@ -59,9 +59,6 @@ public class JsonMapper {
 		return s;
 	}
 
-	/***
-	 * @throws JsonProcessingException
-	 */
 	public <T> String toStringFrom(final T sourceObject) {
 		try {
 			return objectMapper.writeValueAsString(sourceObject);
@@ -70,10 +67,6 @@ public class JsonMapper {
 		}
 	}
 
-	/***
-	 * @throws JsonMappingException
-	 * @throws JsonProcessingException
-	 */
 	public <T> T fromStringTo(final Class<T> targetClass, final String sourceJson) {
 		try {
 			return objectMapper.readValue(sourceJson, targetClass);
@@ -84,10 +77,6 @@ public class JsonMapper {
 		}
 	}
 
-	/***
-	 * @throws JsonMappingException
-	 * @throws JsonProcessingException
-	 */
 	public <T> T fromTreeTo(final Class<T> targetClass, final TreeNode treeNode) {
 		try {
 			return objectMapper.treeToValue(treeNode, targetClass);
@@ -98,9 +87,6 @@ public class JsonMapper {
 		}
 	}
 
-	/***
-	 * @throws JsonProcessingException
-	 */
 	public JsonNode toTreeFrom(final String sourceJson) {
 		try {
 			return objectMapper.readTree(sourceJson);
