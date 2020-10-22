@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -32,7 +32,11 @@ public class JsonMapperTests {
 
 	@Test
 	public void serializingExtendedClassesWithLombokBuildersWorks() {
-		ChildJson j = ChildJson.builder().id(2L).createdOn(localDateTime).editedOn(localDateTime).string("test")
+		ChildJson j = ChildJson.builder()
+				.id(2L)
+				.createdOn(localDateTime)
+				.editedOn(localDateTime)
+				.string("test")
 				.build();
 		String result = mapper.toStringFrom(j);
 		assertThat(result).contains(localDateTimeString);
