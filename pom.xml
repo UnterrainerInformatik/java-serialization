@@ -10,9 +10,15 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>serialization</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>Serialization</name>
 	<packaging>jar</packaging>
+
+	<properties>
+		<name>Serialization</name>
+		<package-path>info/unterrainer/commons/serialization</package-path>
+		<packg-string>info.unterrainer.commons.serialization</packg-string>
+	</properties>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core -->
