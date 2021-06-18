@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.AccessLevel;
@@ -59,6 +60,10 @@ public class JsonMapper {
 		return s;
 	}
 
+	public TypeFactory getTypeFactory() {
+		return objectMapper.getTypeFactory();
+	}
+
 	public <T> String toStringFrom(final T sourceObject) {
 		try {
 			return objectMapper.writeValueAsString(sourceObject);
@@ -77,9 +82,9 @@ public class JsonMapper {
 		}
 	}
 
-	public <T> T fromTreeTo(final Class<T> targetClass, final TreeNode treeNode) {
+	public <T> T fromStringTo(final JavaType targetClass, final String sourceJson) {
 		try {
-			return objectMapper.treeToValue(treeNode, targetClass);
+			return objectMapper.readValue(sourceJson, targetClass);
 		} catch (JsonMappingException e) {
 			throw new info.unterrainer.commons.serialization.exceptions.JsonMappingException(e.getMessage(), e);
 		} catch (JsonProcessingException e) {
