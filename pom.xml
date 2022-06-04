@@ -10,7 +10,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>serialization</artifactId>
-	<version>0.1.7</version>
+	<version>0.1.9</version>
 	<name>Serialization</name>
 	<packaging>jar</packaging>
 
