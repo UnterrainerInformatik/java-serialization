@@ -26,5 +26,8 @@ hs_err_pid*
 .settings/
 
 .classpath
+/bin/
 
 bin/
+
+src/main/java/info/unterrainer/commons/serialization/Information.java
