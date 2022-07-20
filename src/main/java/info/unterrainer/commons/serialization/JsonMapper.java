@@ -103,4 +103,30 @@ public class JsonMapper {
 	public <T> JsonNode toTreeFrom(final T sourceObject) {
 		return objectMapper.valueToTree(sourceObject);
 	}
+
+	/**
+	 * Traverses the objects' nodes using your commands and returns the resulting
+	 * value as string.
+	 * <p>
+	 * Use '.' to delimit the levels of depth (e.g.: 'parent.sub.name') Use '#'
+	 * followed by an index to pick a specific item from an array (e.g.:
+	 * 'parent.#2.name')
+	 *
+	 * @param sourceJson       the JSON to parse as a string representation
+	 * @param traversalCommand the command
+	 * @return the value as string
+	 */
+	public String traverse(final String sourceJson, final String traversalCommand) {
+		JsonNode current = toTreeFrom(sourceJson);
+		String[] commands = traversalCommand.split("\\.");
+		for (String cmd : commands) {
+			if (cmd.startsWith("#")) {
+				cmd = cmd.substring(1);
+				current = current.get(Integer.parseInt(cmd));
+				continue;
+			}
+			current = current.path(cmd);
+		}
+		return current.asText();
+	}
 }
