@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
 
+import info.unterrainer.commons.serialization.jsonmapper.JsonMapper;
 import info.unterrainer.commons.serialization.jsons.DateTimeJson;
 
 public class DateTimeTests {

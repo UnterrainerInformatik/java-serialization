@@ -1,4 +1,4 @@
-package info.unterrainer.commons.serialization;
+package info.unterrainer.commons.serialization.jsonmapper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -68,7 +68,8 @@ public class JsonMapper {
 		try {
 			return objectMapper.writeValueAsString(sourceObject);
 		} catch (JsonProcessingException e) {
-			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonProcessingException(
+					e.getMessage(), e);
 		}
 	}
 
@@ -76,9 +77,11 @@ public class JsonMapper {
 		try {
 			return objectMapper.readValue(sourceJson, targetClass);
 		} catch (JsonMappingException e) {
-			throw new info.unterrainer.commons.serialization.exceptions.JsonMappingException(e.getMessage(), e);
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonMappingException(e.getMessage(),
+					e);
 		} catch (JsonProcessingException e) {
-			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonProcessingException(
+					e.getMessage(), e);
 		}
 	}
 
@@ -86,9 +89,11 @@ public class JsonMapper {
 		try {
 			return objectMapper.readValue(sourceJson, targetClass);
 		} catch (JsonMappingException e) {
-			throw new info.unterrainer.commons.serialization.exceptions.JsonMappingException(e.getMessage(), e);
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonMappingException(e.getMessage(),
+					e);
 		} catch (JsonProcessingException e) {
-			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonProcessingException(
+					e.getMessage(), e);
 		}
 	}
 
@@ -96,7 +101,8 @@ public class JsonMapper {
 		try {
 			return objectMapper.readTree(sourceJson);
 		} catch (JsonProcessingException e) {
-			throw new info.unterrainer.commons.serialization.exceptions.JsonProcessingException(e.getMessage(), e);
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonProcessingException(
+					e.getMessage(), e);
 		}
 	}
 
