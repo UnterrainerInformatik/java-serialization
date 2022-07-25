@@ -1,4 +1,4 @@
-package info.unterrainer.commons.serialization;
+package info.unterrainer.commons.serialization.jsonmapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,10 +9,9 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import info.unterrainer.commons.serialization.jsonmapper.JsonMapper;
-import info.unterrainer.commons.serialization.jsons.ChildJson;
-import info.unterrainer.commons.serialization.jsons.MediolaDatagramJson;
-import info.unterrainer.commons.serialization.jsons.SimpleJson;
+import info.unterrainer.commons.serialization.jsonmapper.jsons.ChildJson;
+import info.unterrainer.commons.serialization.jsonmapper.jsons.MediolaDatagramJson;
+import info.unterrainer.commons.serialization.jsonmapper.jsons.SimpleJson;
 
 public class JsonMapperTests {
 
