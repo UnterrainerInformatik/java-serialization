@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import info.unterrainer.commons.serialization.objectmapper.exceptions.ObjectMapperMappingException;
 import info.unterrainer.commons.serialization.objectmapper.models.Car;
 import info.unterrainer.commons.serialization.objectmapper.models.CarDto;
+import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithObject;
+import info.unterrainer.commons.serialization.objectmapper.models.OtherObjectWithObject;
 import info.unterrainer.commons.serialization.objectmapper.models.SimpleUser;
 import info.unterrainer.commons.serialization.objectmapper.models.SmallCarDto;
 
@@ -50,4 +52,10 @@ public class ObjectMapperSimpleTests {
 		});
 	}
 
+	@Test
+	public void mappingObjectToObjectWorks() {
+		ObjectWithObject oWO = new ObjectWithObject("HALLO");
+		OtherObjectWithObject otherOWO = oMapper.map(ObjectWithObject.class, OtherObjectWithObject.class, oWO);
+		assertEquals(oWO.getObject(), otherOWO.getObject());
+	}
 }

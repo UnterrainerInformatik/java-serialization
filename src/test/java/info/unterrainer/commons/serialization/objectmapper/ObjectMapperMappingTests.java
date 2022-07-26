@@ -14,6 +14,7 @@ import info.unterrainer.commons.serialization.objectmapper.models.ComplexUser;
 import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithArray;
 import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithObject;
 import info.unterrainer.commons.serialization.objectmapper.models.OtherObjectWithArray;
+import info.unterrainer.commons.serialization.objectmapper.models.OtherObjectWithObject;
 import info.unterrainer.commons.serialization.objectmapper.models.OtherSimpleUser;
 import info.unterrainer.commons.serialization.objectmapper.models.SimpleUser;
 
