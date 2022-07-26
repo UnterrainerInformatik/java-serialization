@@ -1,10 +1,12 @@
 package info.unterrainer.commons.serialization.objectmapper.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
+import lombok.NoArgsConstructor;
 
 @Data
-@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Car {
 	private int doorCount;
 	private String makeOfYear;

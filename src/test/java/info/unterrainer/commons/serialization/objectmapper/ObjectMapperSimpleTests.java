@@ -10,6 +10,7 @@ import info.unterrainer.commons.serialization.objectmapper.exceptions.ObjectMapp
 import info.unterrainer.commons.serialization.objectmapper.models.Car;
 import info.unterrainer.commons.serialization.objectmapper.models.CarDto;
 import info.unterrainer.commons.serialization.objectmapper.models.SimpleUser;
+import info.unterrainer.commons.serialization.objectmapper.models.SmallCarDto;
 
 public class ObjectMapperSimpleTests {
 	public ObjectMapper oMapper;
@@ -21,9 +22,7 @@ public class ObjectMapperSimpleTests {
 
 	@Test
 	public void mappingCarToCarDtoWorks() {
-		Car car = Car.builder().build();
-		car.setDoorCount(2);
-		car.setMakeOfYear("1929");
+		Car car = new Car(2, "1929");
 		CarDto carDto = oMapper.map(Car.class, CarDto.class, car);
 		assertEquals(car.getDoorCount(), carDto.getDoorCount());
 		assertEquals(car.getMakeOfYear(), carDto.getMakeOfYear());
@@ -31,21 +30,24 @@ public class ObjectMapperSimpleTests {
 
 	@Test
 	public void mappingCarToSmallCarDtoWorks() {
-		// im Target fehlt ein Feld
-		// ... ev. gibt es eine Einstellung dafür...
-		// ... ev. beim Erzeugen der JMapperAPI.
+		Car car = new Car(2, "1929");
+		SmallCarDto smallCarDto = oMapper.map(Car.class, SmallCarDto.class, car);
+		assertEquals(car.getDoorCount(), smallCarDto.getDoorCount());
 	}
 
 	@Test
 	public void mappingSmallCarDtoToCarWorks() {
-		// im Source fehlt ein Feld
+		SmallCarDto smallCarDto = new SmallCarDto(2);
+		Car car = oMapper.map(SmallCarDto.class, Car.class, smallCarDto);
+		assertEquals(smallCarDto.getDoorCount(), car.getDoorCount());
 	}
 
 	@Test
 	public void mappingCarDtoToSimpleUserThrowsException() {
 		assertThrows(ObjectMapperMappingException.class, () -> {
 			CarDto car = new CarDto(4, "1975");
-			SimpleUser u = oMapper.map(CarDto.class, SimpleUser.class, car);
+			oMapper.map(CarDto.class, SimpleUser.class, car);
 		});
 	}
+
 }

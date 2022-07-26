@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class SmallCarDto {
-	private int doorCount;
+@NoArgsConstructor
+public class ObjectWithArray {
+    Object[] objects;
 }
