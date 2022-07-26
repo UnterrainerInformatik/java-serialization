@@ -1,4 +1,4 @@
-package info.unterrainer.commons.serialization;
+package info.unterrainer.commons.serialization.jsonmapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import info.unterrainer.commons.serialization.jsons.DateTimeJson;
+import info.unterrainer.commons.serialization.jsonmapper.jsons.DateTimeJson;
 
 public class DateTimeTests {
 

@@ -1,4 +1,4 @@
-package info.unterrainer.commons.serialization.jsons;
+package info.unterrainer.commons.serialization.jsonmapper.jsons;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

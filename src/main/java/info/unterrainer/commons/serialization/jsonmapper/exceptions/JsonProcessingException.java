@@ -1,4 +1,4 @@
-package info.unterrainer.commons.serialization.exceptions;
+package info.unterrainer.commons.serialization.jsonmapper.exceptions;
 
 public class JsonProcessingException extends RuntimeException {
 

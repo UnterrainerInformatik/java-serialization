@@ -1,7 +1,8 @@
-package info.unterrainer.commons.serialization.jsons;
+package info.unterrainer.commons.serialization.jsonmapper.jsons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import info.unterrainer.commons.serialization.jsons.BasicJson;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
