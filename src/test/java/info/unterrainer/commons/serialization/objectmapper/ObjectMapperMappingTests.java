@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import info.unterrainer.commons.serialization.objectmapper.models.ComplexUser;
 import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithArray;
-import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithObject;
 import info.unterrainer.commons.serialization.objectmapper.models.OtherObjectWithArray;
 import info.unterrainer.commons.serialization.objectmapper.models.OtherSimpleUser;
 import info.unterrainer.commons.serialization.objectmapper.models.SimpleUser;
@@ -36,28 +34,6 @@ public class ObjectMapperMappingTests {
 		}, (y, x) -> {
 			x.setFirstName(y.getFirstName());
 			x.setLastName(y.getSurName());
-		});
-		oMapper.registerMapping(SimpleUser.class, OtherSimpleUser.class, (x, y) -> {
-			y.setFirstName(x.getFirstName());
-			y.setSurName(x.getLastName());
-		}, (y, x) -> {
-			x.setFirstName(y.getFirstName());
-			x.setLastName(y.getSurName());
-		});
-		oMapper.registerMapping(String[].class, ObjectWithArray.class, (x, y) -> {
-			y.setObjects(x);
-		}, (y, x) -> {
-			x = Arrays.copyOf(y.getObjects(), y.getObjects().length, x.getClass());
-		});
-		oMapper.registerMapping(ObjectWithArray.class, OtherObjectWithArray.class, (x, y) -> {
-			y.setObjects(Arrays.copyOf(x.getObjects(), x.getObjects().length, x.getObjects().getClass()));
-		}, (y, x) -> {
-			x.setObjects(Arrays.copyOf(y.getObjects(), y.getObjects().length, y.getObjects().getClass()));
-		});
-		oMapper.registerMapping(Integer.class, ObjectWithObject.class, (x, y) -> {
-			y.setObject(x);
-		}, (y, x) -> {
-			x = Integer.parseInt(String.valueOf(y));
 		});
 	}
 
@@ -100,31 +76,15 @@ public class ObjectMapperMappingTests {
 
 	@Test
 	public void mappingObjectWithArrayWorks() {
-		String[] array = new String[] {
-				"Danijel",
-				"Balog",
-				"Hallo"
-		};
-		ObjectWithArray oArray = oMapper.map(ObjectWithArray.class, array);
-		assertArrayEquals(array, oArray.getObjects());
+		ObjectWithArray sArray = new ObjectWithArray(new String[] { "Danijel", "Balog", "Hallo" });
+		ObjectWithArray tArray = oMapper.map(ObjectWithArray.class, sArray);
+		assertArrayEquals(sArray.getObjects(), tArray.getObjects());
 	}
 
 	@Test
 	public void mappingObjectWithArrayOfObjectsWorks() {
-		ObjectWithArray array = new ObjectWithArray(new Object[] {
-				"Danijel",
-				500,
-				"Balog",
-				"Hallo"
-		});
+		ObjectWithArray array = new ObjectWithArray(new String[] { "Danijel", "gluppy", "Balog", "Hallo" });
 		OtherObjectWithArray oArray = oMapper.map(OtherObjectWithArray.class, array);
 		assertArrayEquals(array.getObjects(), oArray.getObjects());
-	}
-
-	@Test
-	public void mappingObjectWithinObjectWorks() {
-		Integer i = 1234;
-		ObjectWithObject oWO = oMapper.map(ObjectWithObject.class, i);
-		assertEquals(i, oWO.getObject());
 	}
 }
