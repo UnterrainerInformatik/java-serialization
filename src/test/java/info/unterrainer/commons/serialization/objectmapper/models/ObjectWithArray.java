@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ObjectWithArray {
-    Object[] objects;
+	String[] objects;
 }

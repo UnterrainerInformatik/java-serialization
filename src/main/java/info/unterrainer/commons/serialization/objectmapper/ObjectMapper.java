@@ -3,9 +3,6 @@ package info.unterrainer.commons.serialization.objectmapper;
 import static com.googlecode.jmapper.api.JMapperAPI.global;
 import static com.googlecode.jmapper.api.JMapperAPI.mappedClass;
 
-import java.awt.geom.Arc2D.Float;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -15,7 +12,6 @@ import com.googlecode.jmapper.api.JMapperAPI;
 import com.googlecode.jmapper.exceptions.JMapperException;
 
 import info.unterrainer.commons.serialization.objectmapper.exceptions.ObjectMapperMappingException;
-import info.unterrainer.commons.serialization.objectmapper.exceptions.ObjectMapperProcessingException;
 import info.unterrainer.commons.serialization.objectmapper.key.MappingKey;
 import lombok.NonNull;
 
@@ -37,13 +33,18 @@ public class ObjectMapper {
 			mappings.put(new MappingKey<>(targetType, sourceType), back);
 	}
 
-	public <S, T> T map(@NonNull final Class<S> sourceType, @NonNull final Class<T> targetType,
-			@NonNull final S source) {
-		return map(sourceType, targetType, source, null);
+	public <S, T> T map(@NonNull final Class<T> targetType, @NonNull final S source) {
+		return map(targetType, source, null);
 	}
 
-	public <S, T> T map(@NonNull final Class<S> sourceType, @NonNull final Class<T> targetType, @NonNull final S source,
-			final T target) {
+	@SuppressWarnings("unchecked")
+	public <S, T> T map(@NonNull final S source, @NonNull final T target) {
+		return map((Class<T>) target.getClass(), source, target);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <S, T> T map(@NonNull final Class<T> targetType, @NonNull final S source, final T target) {
+		final Class<S> sourceType = (Class<S>) source.getClass();
 		T result = mapWithJMapper(sourceType, targetType, source, target);
 		return mapWithBiConsumer(sourceType, targetType, source, result);
 	}
@@ -58,23 +59,8 @@ public class ObjectMapper {
 		return target;
 	}
 
-	private <T> T constructObjectWithObjectType(final Class<T> targetType) {
-		try {
-			return targetType.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
-			throw new ObjectMapperProcessingException("Error while instantiating target object", e);
-		}
-	}
-
 	private <T, S> T mapWithJMapper(@NonNull final Class<S> sourceType, @NonNull final Class<T> targetType,
 			@NonNull final S source, final T target) {
-		if (IsPrimitveIncludingWrapper(sourceType) || IsPrimitveIncludingWrapper(targetType)
-				|| IsPrimitiveCollectionOrArrayIncludingWrapper(sourceType)
-				|| IsPrimitiveCollectionOrArrayIncludingWrapper(targetType)) {
-			return constructObjectWithObjectType(targetType);
-		}
-
 		@SuppressWarnings("unchecked")
 		JMapper<T, S> jMapper = (JMapper<T, S>) mappers.get(new MappingKey<>(sourceType, targetType));
 		if (jMapper == null) {
@@ -94,15 +80,5 @@ public class ObjectMapper {
 			throw new ObjectMapperMappingException("Error mapping objects.", e);
 		}
 
-	}
-
-	private boolean IsPrimitveIncludingWrapper(final Class<?> t) {
-		return t.isPrimitive() || t == String.class || t == Short.class || t == Integer.class || t == Long.class
-				|| t == Float.class || t == Double.class || t == Character.class || t == Boolean.class;
-	}
-
-	private boolean IsPrimitiveCollectionOrArrayIncludingWrapper(final Class<?> t) {
-		return t.isArray() && IsPrimitveIncludingWrapper(t.getComponentType()) || Collection.class.isAssignableFrom(t)
-				|| Map.class.isAssignableFrom(t);
 	}
 }
