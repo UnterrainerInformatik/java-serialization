@@ -2,7 +2,6 @@ package info.unterrainer.commons.serialization.objectmapper;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import info.unterrainer.commons.serialization.objectmapper.models.ComplexUser;
 import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithArray;
 import info.unterrainer.commons.serialization.objectmapper.models.ObjectWithObject;
 import info.unterrainer.commons.serialization.objectmapper.models.OtherObjectWithArray;
-import info.unterrainer.commons.serialization.objectmapper.models.OtherObjectWithObject;
 import info.unterrainer.commons.serialization.objectmapper.models.OtherSimpleUser;
 import info.unterrainer.commons.serialization.objectmapper.models.SimpleUser;
 
@@ -71,7 +69,7 @@ public class ObjectMapperMappingTests {
 		cu.setDateTime(LocalDate.now());
 		cu.setValue(100.00d);
 		SimpleUser su = SimpleUser.builder().build();
-		su = oMapper.map(ComplexUser.class, SimpleUser.class, cu, su);
+		su = oMapper.map(cu, su);
 		assertEquals(su.getFirstName(), cu.getFirstName());
 		assertEquals(su.getLastName(), cu.getLastName());
 	}
@@ -84,7 +82,7 @@ public class ObjectMapperMappingTests {
 		cu.setDateTime(LocalDate.now());
 		cu.setValue(100.00d);
 		OtherSimpleUser osu = OtherSimpleUser.builder().build();
-		osu = oMapper.map(ComplexUser.class, OtherSimpleUser.class, cu, osu);
+		osu = oMapper.map(cu, osu);
 		assertEquals(osu.getFirstName(), cu.getFirstName());
 		assertEquals(osu.getSurName(), cu.getLastName());
 	}
@@ -95,7 +93,7 @@ public class ObjectMapperMappingTests {
 		su.setFirstName("Danijel");
 		su.setSurName("Balog");
 		ComplexUser cu = ComplexUser.builder().build();
-		cu = oMapper.map(OtherSimpleUser.class, ComplexUser.class, su, cu);
+		cu = oMapper.map(su, cu);
 		assertEquals(su.getFirstName(), cu.getFirstName());
 		assertEquals(su.getSurName(), cu.getLastName());
 	}
@@ -107,7 +105,7 @@ public class ObjectMapperMappingTests {
 				"Balog",
 				"Hallo"
 		};
-		ObjectWithArray oArray = oMapper.map(String[].class, ObjectWithArray.class, array);
+		ObjectWithArray oArray = oMapper.map(ObjectWithArray.class, array);
 		assertArrayEquals(array, oArray.getObjects());
 	}
 
@@ -119,14 +117,14 @@ public class ObjectMapperMappingTests {
 				"Balog",
 				"Hallo"
 		});
-		OtherObjectWithArray oArray = oMapper.map(ObjectWithArray.class, OtherObjectWithArray.class, array);
+		OtherObjectWithArray oArray = oMapper.map(OtherObjectWithArray.class, array);
 		assertArrayEquals(array.getObjects(), oArray.getObjects());
 	}
 
 	@Test
 	public void mappingObjectWithinObjectWorks() {
 		Integer i = 1234;
-		ObjectWithObject oWO = oMapper.map(Integer.class, ObjectWithObject.class, i);
+		ObjectWithObject oWO = oMapper.map(ObjectWithObject.class, i);
 		assertEquals(i, oWO.getObject());
 	}
 }

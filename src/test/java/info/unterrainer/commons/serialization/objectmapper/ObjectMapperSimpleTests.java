@@ -25,7 +25,7 @@ public class ObjectMapperSimpleTests {
 	@Test
 	public void mappingCarToCarDtoWorks() {
 		Car car = new Car(2, "1929");
-		CarDto carDto = oMapper.map(Car.class, CarDto.class, car);
+		CarDto carDto = oMapper.map(CarDto.class, car);
 		assertEquals(car.getDoorCount(), carDto.getDoorCount());
 		assertEquals(car.getMakeOfYear(), carDto.getMakeOfYear());
 	}
@@ -33,14 +33,14 @@ public class ObjectMapperSimpleTests {
 	@Test
 	public void mappingCarToSmallCarDtoWorks() {
 		Car car = new Car(2, "1929");
-		SmallCarDto smallCarDto = oMapper.map(Car.class, SmallCarDto.class, car);
+		SmallCarDto smallCarDto = oMapper.map(SmallCarDto.class, car);
 		assertEquals(car.getDoorCount(), smallCarDto.getDoorCount());
 	}
 
 	@Test
 	public void mappingSmallCarDtoToCarWorks() {
 		SmallCarDto smallCarDto = new SmallCarDto(2);
-		Car car = oMapper.map(SmallCarDto.class, Car.class, smallCarDto);
+		Car car = oMapper.map(Car.class, smallCarDto);
 		assertEquals(smallCarDto.getDoorCount(), car.getDoorCount());
 	}
 
@@ -48,14 +48,14 @@ public class ObjectMapperSimpleTests {
 	public void mappingCarDtoToSimpleUserThrowsException() {
 		assertThrows(ObjectMapperMappingException.class, () -> {
 			CarDto car = new CarDto(4, "1975");
-			oMapper.map(CarDto.class, SimpleUser.class, car);
+			oMapper.map(SimpleUser.class, car);
 		});
 	}
 
 	@Test
 	public void mappingObjectToObjectWorks() {
 		ObjectWithObject oWO = new ObjectWithObject("HALLO");
-		OtherObjectWithObject otherOWO = oMapper.map(ObjectWithObject.class, OtherObjectWithObject.class, oWO);
+		OtherObjectWithObject otherOWO = oMapper.map(OtherObjectWithObject.class, oWO);
 		assertEquals(oWO.getObject(), otherOWO.getObject());
 	}
 }

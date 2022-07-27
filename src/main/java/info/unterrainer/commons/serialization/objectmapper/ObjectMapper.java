@@ -37,13 +37,15 @@ public class ObjectMapper {
 			mappings.put(new MappingKey<>(targetType, sourceType), back);
 	}
 
-	public <S, T> T map(@NonNull final Class<S> sourceType, @NonNull final Class<T> targetType,
+	public <S, T> T map(@NonNull final Class<T> targetType,
 			@NonNull final S source) {
-		return map(sourceType, targetType, source, null);
+		return map(targetType, source, null);
 	}
 
-	public <S, T> T map(@NonNull final Class<S> sourceType, @NonNull final Class<T> targetType, @NonNull final S source,
+	@SuppressWarnings("unchecked")
+	public <S, T> T map(@NonNull final Class<T> targetType, @NonNull final S source,
 			final T target) {
+		final Class<S> sourceType = (Class<S>) source.getClass();
 		T result = mapWithJMapper(sourceType, targetType, source, target);
 		return mapWithBiConsumer(sourceType, targetType, source, result);
 	}
