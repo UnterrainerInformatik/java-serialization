@@ -73,6 +73,15 @@ public class JsonMapper {
 		}
 	}
 
+	public String toStringFrom(final JsonNode root) {
+		try {
+			return objectMapper.writeValueAsString(root);
+		} catch (JsonProcessingException e) {
+			throw new info.unterrainer.commons.serialization.jsonmapper.exceptions.JsonProcessingException(
+					e.getMessage(), e);
+		}
+	}
+
 	public <T> T fromStringTo(final Class<T> targetClass, final String sourceJson) {
 		try {
 			return objectMapper.readValue(sourceJson, targetClass);
