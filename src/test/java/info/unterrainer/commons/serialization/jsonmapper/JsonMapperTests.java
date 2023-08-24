@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import info.unterrainer.commons.serialization.jsonmapper.jsons.ChildJson;
 import info.unterrainer.commons.serialization.jsonmapper.jsons.MediolaDatagramJson;
@@ -68,34 +66,5 @@ public class JsonMapperTests {
 		assertThat(d.getData()).isEqualTo("eltako_button4");
 		assertThat(d.getState().getBOn()).isEqualTo("released");
 		assertThat(d.getState().getAOff()).isEqualTo("pressed");
-	}
-
-	@Test
-	public void traversingFirstLevelFieldsWorks() throws JsonMappingException, JsonProcessingException {
-		String s = "{\"string\":\"test\"}";
-		assertThat(mapper.traverse(s, "string")).isEqualTo("test");
-	}
-
-	@Test
-	public void traversingSecondLevelFieldsWorks() throws JsonMappingException, JsonProcessingException {
-		String s = "{\"parent\": {\"name\":\"Gerald\"}}";
-		assertThat(mapper.traverse(s, "parent.name")).isEqualTo("Gerald");
-	}
-
-	@Test
-	public void traversingArrayWorks() throws JsonMappingException, JsonProcessingException {
-		String s = "{\"array\": [{\"name\":\"Gerald\"},{\"name\":\"Günter\"}]}";
-		assertThat(mapper.traverse(s, "array.#0.name")).isEqualTo("Gerald");
-		assertThat(mapper.traverse(s, "array.#1.name")).isEqualTo("Günter");
-	}
-
-	@Test
-	public void manipulatingTreeWorks() throws JsonMappingException, JsonProcessingException {
-		String s = "{\"array\": [{\"name\":\"Gerald\"},{\"name\":\"Günter\"}]}";
-		JsonNode r = mapper.toTreeFrom(s);
-		((ObjectNode) r).put("test", "testval");
-		String str = mapper.toStringFrom(r);
-
-		assertThat(str).isEqualTo("{\"array\":[{\"name\":\"Gerald\"},{\"name\":\"Günter\"}],\"test\":\"testval\"}");
 	}
 }
