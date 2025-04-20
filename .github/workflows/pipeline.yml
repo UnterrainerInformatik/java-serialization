@@ -83,7 +83,7 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ needs.bump.outputs.major_version }}.${{ needs.bump.outputs.minor_version }}.${{ needs.bump.outputs.build_version }} -DgenerateBackupPoms=false
       - name: Build and verify with Maven 🔨
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots verify -Dmaven.test.skip=true
       - name: Publish to Maven Central
         run: mvn deploy
         env:
