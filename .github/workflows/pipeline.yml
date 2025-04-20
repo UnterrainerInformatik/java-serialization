@@ -48,7 +48,7 @@ jobs:
             echo "minor_version=${MINOR_VERSION}" >> $GITHUB_OUTPUT
             echo "build_version=${BUILD_VERSION}" >> $GITHUB_OUTPUT
   build:
-    name: Build 🔨
+    name: Build and publish to Maven Central 🔨
     runs-on: ubuntu-latest
     outputs:
       pom_version: ${{ needs.bump.outputs.pom_version }}
@@ -73,15 +73,15 @@ jobs:
           server-id: maven
           server-username: ${{ secrets.SONATYPE_USERNAME }}
           server-password: ${{ secrets.SONATYPE_PASSWORD }}
-          gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Import GPG key using gpg2 🔐
+        run: |
+          echo "${{ secrets.GPG_SECRET_KEY }}" | base64 --decode | gpg2 --batch --yes --import
+          echo "${{ secrets.GPG_OWNERTRUST }}" | gpg2 --import-ownertrust
+          export GPG_TTY=$(tty)
+          export GPG_EXECUTABLE=gpg2
       - name: Update pom.xml version 💾
         run: |
           mvn versions:set -DnewVersion=${{ needs.bump.outputs.major_version }}.${{ needs.bump.outputs.minor_version }}.${{ needs.bump.outputs.build_version }} -DgenerateBackupPoms=false
-      - name: Import GPG key and set trust
-        run: |
-          echo "${{ secrets.GPG_SECRET_KEY }}" | base64 --decode | gpg --batch --import
-          echo "${{ secrets.GPG_OWNERTRUST }}" | gpg --import-ownertrust
       - name: Build and verify with Maven 🔨
         run: mvn --batch-mode --update-snapshots verify
       - name: Publish to Maven Central
