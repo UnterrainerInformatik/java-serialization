@@ -50,6 +50,8 @@ jobs:
   build:
     name: Build and publish to Maven Central 🔨
     runs-on: ubuntu-latest
+    env:
+      MAVEN_ARGS: -Dmaven.test.skip=true
     outputs:
       pom_version: ${{ needs.bump.outputs.pom_version }}
       major_version: ${{ needs.bump.outputs.major_version }}
@@ -83,9 +85,9 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ needs.bump.outputs.major_version }}.${{ needs.bump.outputs.minor_version }}.${{ needs.bump.outputs.build_version }} -DgenerateBackupPoms=false
       - name: Build and verify with Maven 🔨
-        run: mvn --batch-mode --update-snapshots verify -Dmaven.test.skip=true
+        run: mvn --batch-mode --update-snapshots verify $MAVEN_ARGS
       - name: Publish to Maven Central
-        run: mvn deploy
+        run: mvn deploy $MAVEN_ARGS
         env:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
