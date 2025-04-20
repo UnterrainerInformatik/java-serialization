@@ -8,57 +8,27 @@ on:
 
 jobs:
   bump:
-    name: Get And Bump SemVer 👊
-    runs-on: ubuntu-latest
-    outputs:
-      pom_version: ${{ steps.set_version.outputs.pom_version }}
-      major_version: ${{ steps.set_version.outputs.major_version }}
-      minor_version: ${{ steps.set_version.outputs.minor_version }}
-      build_version: ${{ steps.set_version.outputs.build_version }}
-    steps:
-      - name: Checkout repo 📦
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: '0'
-      - name: Bump version and push tag 👊
-        uses: anothrNick/github-tag-action@master
-        id: bump_version
-        env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
-          RELEASE_BRANCHES: master
-          DEFAULT_BUMP: patch
-          WITH_V: false
-      - name: Extract version from tag 🔍
-        id: set_version
-        env:
-          POM_VERSION: ${{ steps.bump_version.outputs.new_tag }}
-        run: |
-            MAJOR_VERSION=$(echo $POM_VERSION | cut -d. -f1)
-            MINOR_VERSION=$(echo $POM_VERSION | cut -d. -f2)
-            BUILD_VERSION=$(echo $POM_VERSION | cut -d. -f3)
-            echo POM:$POM_VERSION, MAJOR:$MAJOR_VERSION, MINOR:$MINOR_VERSION, BUILD:$BUILD_VERSION
-            echo --- set output for step ---
-            echo "pom_version=${POM_VERSION}" >> $GITHUB_ENV
-            echo "major_version=${MAJOR_VERSION}" >> $GITHUB_ENV
-            echo "minor_version=${MINOR_VERSION}" >> $GITHUB_ENV
-            echo "build_version=${BUILD_VERSION}" >> $GITHUB_ENV
-            echo --- set output for job ---
-            echo "pom_version=${POM_VERSION}" >> $GITHUB_OUTPUT
-            echo "major_version=${MAJOR_VERSION}" >> $GITHUB_OUTPUT
-            echo "minor_version=${MINOR_VERSION}" >> $GITHUB_OUTPUT
-            echo "build_version=${BUILD_VERSION}" >> $GITHUB_OUTPUT
+    uses: UnterrainerInformatik/bump-semver-workflow/.github/workflows/workflow.yml@master
   build:
     name: Build and publish to Maven Central 🔨
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     env:
+      MAVEN_PROFILES: release-to-sonatype
       MAVEN_ARGS: -Dmaven.test.skip=true
-    outputs:
-      pom_version: ${{ needs.bump.outputs.pom_version }}
-      major_version: ${{ needs.bump.outputs.major_version }}
-      minor_version: ${{ needs.bump.outputs.minor_version }}
-      build_version: ${{ needs.bump.outputs.build_version }}
     needs: [bump]
     steps:
+      - name: Pre-fetch upload-artifact action (self-hosted only) ⚙️
+        if: contains(runner.labels, 'self-hosted')
+        run: |
+          mkdir -p ~/.setup-actions
+          cd ~/.setup-actions
+          if [ ! -d "upload-artifact" ]; then
+            echo "Cloning upload-artifact@v4..."
+            git clone --depth=1 --branch v4 https://github.com/actions/upload-artifact.git upload-artifact
+            echo "✅ upload-artifact@v4 cloned manually!"
+          else
+            echo "✅ upload-artifact already fetched."
+          fi
       - name: Checkout repo 📦
         uses: actions/checkout@v4
       - name: Cache Maven packages 💾
@@ -75,25 +45,58 @@ jobs:
           server-id: maven
           server-username: ${{ secrets.SONATYPE_USERNAME }}
           server-password: ${{ secrets.SONATYPE_PASSWORD }}
-      - name: Import GPG key using gpg2 🔐
+      - name: Set up GPG for CI 🔐
         run: |
+          which gpg2 || sudo apt update && sudo apt install -y gnupg2
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "default-cache-ttl 600" >> ~/.gnupg/gpg-agent.conf
+          echo "max-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
+          gpgconf --launch gpg-agent
           echo "${{ secrets.GPG_SECRET_KEY }}" | base64 --decode | gpg2 --batch --yes --import
           echo "${{ secrets.GPG_OWNERTRUST }}" | base64 --decode | gpg2 --import-ownertrust
           export GPG_TTY=$(tty)
-          export GPG_EXECUTABLE=gpg2
+      - name: Write .m2/settings.xml 💾
+        run: |
+          mkdir -p ~/.m2
+          cat <<EOF > ~/.m2/settings.xml
+            <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+              <servers>
+                <server>
+                  <id>maven</id>
+                  <username>${{ secrets.SONATYPE_USERNAME }}</username>
+                  <password>${{ secrets.SONATYPE_PASSWORD }}</password>
+                </server>
+              </servers>
+            </settings>
+          EOF
+      - name: Conditionally setup Maven ⚙️
+        run: |
+          wihch mvn || (sudo apt update && sudo apt install -y maven)
       - name: Update pom.xml version 💾
         run: |
           mvn versions:set -DnewVersion=${{ needs.bump.outputs.major_version }}.${{ needs.bump.outputs.minor_version }}.${{ needs.bump.outputs.build_version }} -DgenerateBackupPoms=false
-      - name: Build and verify with Maven 🔨
-        run: mvn --batch-mode --update-snapshots verify $MAVEN_ARGS
-      - name: Publish to Maven Central
-        run: mvn deploy $MAVEN_ARGS
+      - name: Build and publish with Maven 🔨
         env:
-          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
-          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.GPG_SECRET_KEY }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn clean deploy --batch-mode --update-snapshots -P${{ env.MAVEN_PROFILES }} $MAVEN_ARGS
+      - name: List signed files 🐞
+        run: |
+          echo "📦 Contents of target/:"
+          ls -lh target/
+          echo ""
+          echo "🔍 GPG signatures:"
+          find target/ -type f -name "*.asc" -exec echo "✔ Found:" {} \;
+          echo ""
+          echo "❓ Missing POM signature?" && test ! -f target/*pom.asc && echo "❌ No POM signature found!" || echo "✅ POM is signed."      
       - name: Upload build artifacts ⬆️
+        if: ${{ always() && hashFiles('target/*.jar') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: maven-artifacts
