@@ -7,13 +7,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  detect-runner:
+    runs-on: [self-hosted, Linux, X64]
+    outputs:
+      is_self_hosted: ${{ steps.set_output.outputs.self_hosted }}
+    steps:
+      - id: set_output
+        run: echo "self_hosted=true" >> $GITHUB_OUTPUT
+
   bump:
+    needs: detect-runner
     uses: UnterrainerInformatik/bump-semver-workflow/.github/workflows/workflow.yml@master
+    with:
+      self_hosted: ${{ needs.detect-runner.outputs.is_self_hosted }}
+
   build:
     name: Build and publish to Maven Central 🚀
-    needs: bump
+    needs: [bump, detect-runner]
     uses: UnterrainerInformatik/maven-central-workflow/.github/workflows/workflow.yml@master
     with:
+      self_hosted: ${{ needs.detect-runner.outputs.is_self_hosted }}
       major_version: ${{ needs.bump.outputs.major_version }}
       minor_version: ${{ needs.bump.outputs.minor_version }}
       build_version: ${{ needs.bump.outputs.build_version }}
