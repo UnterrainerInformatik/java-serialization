@@ -13,7 +13,7 @@ jobs:
       is_self_hosted: ${{ steps.set_output.outputs.self_hosted }}
     steps:
       - id: set_output
-        run: echo "self_hosted=true" >> $GITHUB_OUTPUT
+        run: echo "self_hosted=${{ contains(runner.labels, 'self-hosted') }}" >> $GITHUB_OUTPUT
 
   bump:
     needs: detect-runner
